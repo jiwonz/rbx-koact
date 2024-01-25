@@ -1,10 +1,17 @@
 # Koact
-A React.js-like UI Development Framework for Roblox
+A React.js-like UI Development Framework for Roblox and Kolloid Framework on Roblox
 
 # About
 "Koact" stands for KO(lloid)(re)ACT
 It is a built-in library for the Kolloid framework and is included as a submodule.
 Koact also enables UI development in Roblox in a similar way to React.
+
+# Features
+- React-like development pattern
+- Supports Roblox UI Classes
+- Supports React-like Hooks
+- Unlike react, supports Localization
+- Unlike react, supports 2D ParticleEmitter
 
 # Koact Reference
 
@@ -129,7 +136,7 @@ useStylesheet: (stylesheet: {}) -> ()
 ### `useParticleEmitter`
 
 ```lua
-useParticleEmitter: (particleEmitter: ParticleEmitter) -> (() -> ()) -- emit(emitCountOrToggle: number | boolean)
+useParticleEmitter: (particleEmitter: ParticleEmitter) -> (() -> ())
 ```
 
 - Manages particle emitters.
@@ -164,7 +171,7 @@ render: (element: Element, rendererInstance: PlayerGui | SurfaceGui | ScreenGui 
 rbxassetid: (assetId: number | string) -> (string)
 ```
 
-- Converts an asset ID to a string.
+- Converts an asset ID number to a rbxasset string.
 
 ### `setTimeout`
 
@@ -205,3 +212,11 @@ await: (func: () -> ()) -> (any)
 ```
 
 - Awaits the result of an asynchronous function.
+
+# Known Issues
+- Asynchronous functions may not work as expected or may produce errors or bugs.
+
+# TODO
+- Koact.memo()
+- More optimized performance
+- More features for Koact.useSound()
