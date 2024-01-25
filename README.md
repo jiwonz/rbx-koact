@@ -6,18 +6,29 @@ Facebook's React.js-like UI Development Framework for Roblox and Kolloid Framewo
 It is a built-in library for the Kolloid framework and is included as a submodule.
 Koact also enables UI development in Roblox in a similar way to React.
 
+# Note
+This project was not developed using rojo (I just wanted to develop on Roblox Studio :D, And this makes it easy to insert as a submodule into the kolloid framework)
+
 # Features
 - React-like development pattern
 - Supports Roblox UI Classes
+- Supports FULL(?) Auto completion
+- Supports [Helper](#helper-types) types
 - Supports React-like Hooks
 - Unlike react, supports Localization
 - Unlike react, supports 2D ParticleEmitter (thanks to [@nuttolum](https://devforum.roblox.com/u/nuttolum/summary))
+
+# Getting Started
+COMING SOON
 
 # Koact Reference
 
 ## Introduction
 
-This reference document provides an overview of the types and functions defined in the Koact framework.
+Although there are some things missing or added to Koact, we recommend that you refer to [React's references](https://react.dev/reference/react). Additionally, Coact uses a virtual dome like React and its life cycle is almost identical to React.
+
+## Helper Types
+- You can type 'help' or 'HELP' in props table to watch all properties
 
 ## Koact
 
