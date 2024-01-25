@@ -1,5 +1,5 @@
 # Koact
-A React.js-like UI Development Framework for Roblox and Kolloid Framework on Roblox
+Facebook's React.js-like UI Development Framework for Roblox and Kolloid Framework on Roblox
 
 # About
 "Koact" stands for KO(lloid)(re)ACT
@@ -11,7 +11,7 @@ Koact also enables UI development in Roblox in a similar way to React.
 - Supports Roblox UI Classes
 - Supports React-like Hooks
 - Unlike react, supports Localization
-- Unlike react, supports 2D ParticleEmitter
+- Unlike react, supports 2D ParticleEmitter (thanks to [@nuttolum](https://devforum.roblox.com/u/nuttolum/summary))
 
 # Koact Reference
 
@@ -115,7 +115,7 @@ useLocalization: (localizationTarget: string) -> ({})
 useLanguage: () -> (Locale.Enums, (Locale.Enums) -> ())
 ```
 
-- Manages language settings.
+- Returns a function that allows you to change the main language of the localization table that useLocalization will return.
 
 ### `useSound`
 
@@ -123,7 +123,7 @@ useLanguage: () -> (Locale.Enums, (Locale.Enums) -> ())
 useSound: (sound: Sound) -> () -> ()
 ```
 
-- Plays a sound.
+- This returns a function that has the same effect as `SoundService:PlayLocal(sound)`
 
 ### `useStylesheet`
 
@@ -132,14 +132,6 @@ useStylesheet: (stylesheet: {}) -> ()
 ```
 
 - Applies a stylesheet to a component.
-
-### `useParticleEmitter`
-
-```lua
-useParticleEmitter: (particleEmitter: ParticleEmitter) -> (() -> ())
-```
-
-- Manages particle emitters.
 
 ### `newContext`
 
@@ -155,12 +147,12 @@ newContext: (initialValue: any?) -> (Context)
 memo: (component: Component) -> (Component)
 ```
 
-- Memoizes a component.
+- ~~Memoizes a component.~~ (COMING SOON)
 
 ### `render`
 
 ```lua
-render: (element: Element, rendererInstance: PlayerGui | SurfaceGui | ScreenGui | BillboardGui) -> ()
+render: (element: Element, rendererInstance: Instance) -> ()
 ```
 
 - Renders an element.
@@ -220,3 +212,9 @@ await: (func: () -> ()) -> (any)
 - Koact.memo()
 - More optimized performance
 - More features for Koact.useSound()
+
+# Special Thanks
+- [@facebook](https://github.com/facebook/react) for inspiration and solutions
+- [@qwreey75](https://github.com/qwreey/quad) for quad/round
+- [@nuttolum](https://devforum.roblox.com/u/nuttolum/summary) for UIParticle
+- [@roblox](https://github.com/Roblox/roact) for roact/type, roact/symbol
