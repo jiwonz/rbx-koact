@@ -115,6 +115,7 @@ return Koact.Frame{
 ### `Modifiers.TextScale`
 - Modifies parent element's TextSize depends on this modifier's `Scale` prop
 - This `Scale` prop is relative to the Y axis
+- Example code is appeared in [Function Components](#function-components) example code section
 
 ### `Modifiers.Round`
 - Uses Image's slices to implement its round corners
@@ -141,8 +142,11 @@ local function MyButton(props)
 		Koact.TextLabel{
 			Size=UDim2.fromScale(1,1);
 			Text=props.Text:upper(); --- i want to make it upper case
+			Koact.Modifiers.TextScale{
+				Scale=0.7;
+			}; --- TextScale example!
 		}
-	} -- <- this will merge props
+	}
 end
 
 Koact.render(
