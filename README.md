@@ -1,5 +1,5 @@
 # Koact
-Facebook's React.js-like UI Development Framework for Roblox and Kolloid Framework on Roblox
+Facebook's React.js-like UI Development Framework for Roblox(Luau) and Kolloid Framework on Roblox
 
 # About
 "Koact" stands for KO(lloid)(re)ACT
@@ -10,24 +10,25 @@ Koact also enables UI development in Roblox in a similar way to React.
 This project was not developed using rojo (I just wanted to develop on Roblox Studio :D, And this makes it easy to insert as a submodule into the kolloid framework)
 
 # Features
-- React-like development pattern
+- React-like development pattern and code styles
 - Supports Roblox UI Classes
-- Supports FULL(?) Auto completion
+- Supports Full Auto completion
 - Supports [Helper](#helper-types) types
 - Supports React-like Hooks
 - More snippets support
+- Unlike react, there is modifier elements concept
 - Unlike react, supports Localization
 - Unlike react, supports 2D ParticleEmitter (thanks to [@nuttolum](https://devforum.roblox.com/u/nuttolum/summary))
 
 # Installation
-[Download .RBXM](https://github.com/jiwonz/koact/raw/main/build/koact.rbxm)
+> [Download .RBXM](https://github.com/jiwonz/koact/raw/main/build/koact.rbxm)
 
 # Example Code
 ```lua
 local function App()
 	local count,setCount = Koact.useState(0)
 	return Koact.TextButton{
-		align="center";
+		align="center"; --- equal to AnchorPoint=Vector2.new(0.5,0.5);
 		Position=UDim2.fromScale(0.5,0.5);
 		Size=UDim2.fromScale(0.5,0.5);
 		Text=("you've been clicked %s times!"):format(count);
@@ -36,6 +37,12 @@ local function App()
 		end
 	}
 end
+
+Koact.render(
+	Koact.ScreenGui{
+		Koact[App]{}
+	},LocalPlayer.PlayerGui
+)
 ```
 
 # Getting Started
@@ -49,6 +56,7 @@ Although there are some things missing or added to Koact, we recommend that you 
 
 ## Helper Types
 - You can type 'help' or 'HELP' in props table to watch all properties
+- If there are any changes to the Roblox UI API, the helper must be updated for autocomplete to work to the latest version.
 
 ## Koact
 
@@ -86,6 +94,44 @@ Koact.ImageButton{
 		print("right mouse clicked")
 	end,
 }
+```
+
+### *Modifier Elements*
+### `Modifier[UI.."bla bla"]`
+- Creates Roblox UI Class Elements such as UIGradient, UICorner, UIStroke etc
+
+### *Function Components*
+`example`
+```lua
+local function MyButton(props)
+	return Koact.ImageButton{
+		Position=props.Position;
+		Size=props.Size;
+		Image=Koact.rbxassetid(12345678);
+		Koact.TextLabel{
+			Size=UDim2.fromScale(1,1);
+			Text=props.Text:upper(); --- i want to make it upper case
+		}
+	} -- <- this will merge props
+end
+
+Koact.render(
+	Koact.ScreenGui{
+		Koact[MyButton]{ --- this table is called 'props'
+			Text="Hello Koact!"
+			Size=UDim2.fromOffset(200,100);
+			Position=UDim2.fromOffset(0,0);
+		};
+		Koact[MyButton]{
+			Size=UDim2.fromOffset(200,100);
+			Position=UDim2.fromOffset(0,100);
+		};
+		Koact[MyButton]{
+			Size=UDim2.fromOffset(200,100);
+			Position=UDim2.fromOffset(0,200);
+		};
+	},LocalPlayer.PlayerGui
+)
 ```
 
 ### *Hooks*
