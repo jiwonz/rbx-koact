@@ -273,10 +273,10 @@ useTween: (initialValue: any) -> (Hooker, () -> ())
 ### `useLocalization`
 `warning` This function is only available in function component scope
 ```lua
-useLocalization: (localizationTarget: string) -> ({})
+useLocalization: (localizationTable: {}) -> ({})
 ```
 
-- Handles localization.
+- Returns current localization table
 
 ### `useLanguage`
 `warning` This function is only available in function component scope
@@ -284,7 +284,7 @@ useLocalization: (localizationTarget: string) -> ({})
 useLanguage: () -> (Locale.Enums, (Locale.Enums) -> ())
 ```
 
-- Returns a function that allows you to change the main language of the localization table that useLocalization will return.
+- Returns current language using and a function that allows you to manually change the main language of the localization table that useLocalization will return.
 
 ### `useSound`
 `warning` This function is only available in function component scope
