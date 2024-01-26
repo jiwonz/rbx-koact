@@ -18,6 +18,9 @@ This project was not developed using rojo (I just wanted to develop on Roblox St
 - Unlike react, supports Localization
 - Unlike react, supports 2D ParticleEmitter (thanks to [@nuttolum](https://devforum.roblox.com/u/nuttolum/summary))
 
+# Installation
+[Download .RBXM](https://github.com/jiwonz/koact/raw/main/build/koact.rbxm)
+
 # Getting Started
 COMING SOON
 
