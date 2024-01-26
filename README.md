@@ -57,7 +57,7 @@ return {
 local localizationTable = require(script.Parent.localization.default)
 
 local function App()
-	local count,setCount = Koact.useState(0)
+	local count, setCount = Koact.useState(0)
 	local localization = Koact.useLocalization(localizationTable)
 
 	return Koact.TextButton{
@@ -92,7 +92,7 @@ Although there are some things missing or added to Koact, we recommend that you 
 
 ## Koact
 
-### *Common Elements*
+### *Roblox Elements*
 `example`
 ```lua
 --- to create UI Elements
@@ -125,7 +125,7 @@ Koact.ImageButton{
 		print("right mouse clicked")
 	end,
 	on={"Changed",function()
-		print("you can also handle RBXScriptEvent manually too!")
+		print("you can also handle Instance's events manually too!")
 	end},
 	onChange={"Name",function(old,new)
 		print("property Name has changed to",new,"from",old)
@@ -156,6 +156,14 @@ return function()
 end
 ```
 
+### *Functional Elements*
+
+### `RouterProvider`
+- Provides path and navigate function to children components
+### `Route`
+- If the router's current path matches, render the child component, otherwise not render it.
+### ``
+
 ### *Modifier Elements*
 - `Koact.Modifiers[Element Name]` Creates a modifier element whose parent element is affected by it.
 
@@ -165,31 +173,33 @@ end
 --- Or you can use special custom modifiers whose references are listed below.
 return Koact.Frame{
 	Size=UDim2.fromOffset(300,300);
-	Koact.Modifiers.UIGradient{
+	Koact.Modifier.UIGradient{
 		Color=ColorSequence.new(Color3.new(1,0,0),Color3.new(0,0,1));
 		Rotation=45;
 	}
 }
 ```
 
-### `Modifiers.TextScale`
+### `Modifier.TextScale`
 - Modifies parent element's TextSize depends on this modifier's `Scale` prop
 - This `Scale` prop is relative to the Y axis
 - Example code is appeared in [Function Components](#function-components) example code section
 
-### `Modifiers.Round`
+### `Modifier.Round`
 - Uses Image's slices to implement its round corners
 - Must be parented to ImageLabel or ImageButton
+- Special thanks to qwreey75 for providing this function
 
-### `Modifiers.Blur`
+### `Modifier.Blur`
 - Makes parent element's area blurry
 - Uses `DOF` to create this blur effect
 
-### `Modifiers.ScreenBlur`
+### `Modifier.ScreenBlur`
 - Makes whole screen blurry if the parent element is visible
 
-### `Modifiers.Shadow`
+### `Modifier.Shadow`
 - Creates shadow effect on the parent element
+- It repeats every frame to maintain the position of the parent element.
 
 ### *Function Components*
 `example`
@@ -202,7 +212,7 @@ local function MyButton(props)
 		Koact.TextLabel{
 			Size=UDim2.fromScale(1,1);
 			Text=props.Text:upper(); --- i want to make it upper case
-			Koact.Modifiers.TextScale{
+			Koact.Modifier.TextScale{
 				Scale=0.7;
 			}; --- TextScale example!
 		}
@@ -261,6 +271,38 @@ useReducer: (reducer: (state: any?, action: any?) -> (any?), initialArg: any?) -
 ```
 
 - Manages state using a reducer function.
+
+`example`
+```lua
+local function counterReducer(state,action)
+	if action.type == "INCREMENT" then
+		return { count = state.count + 1 }
+	elseif action.type == "DECREMENT" then
+		return { count = state.count - 1 }
+	else
+		return state
+	end
+end
+
+local function Counter()
+	local state, dispatch = Koact.useReducer(counterReducer,{ count = 0 })
+
+	return Koact.TextButton{
+		align="center";
+		Text=state.count;
+		Size=UDim2.fromScale(0.5,0.5);
+		onClick=function()
+			dispatch({ type = "INCREMENT" })
+		end,
+		onRightClick=function()
+			dispatch({ type = "DECREMENT" })
+		end,
+		Koact.Modifier.TextScale{
+			Scale=0.7;
+		}
+	}
+end
+```
 
 ### `useRef`
 `warning` This function is only available in function component scope
@@ -359,6 +401,8 @@ useStylesheet: (stylesheet: {}) -> ()
 
 - Applies a stylesheet to a component.
 
+### *Functions*
+
 ### `newContext`
 
 ```lua
@@ -367,7 +411,12 @@ newContext: (initialValue: any?) -> (Context)
 
 - Creates a new context.
 
-### *Functions*
+### `newLocalizationTable`
+```lua
+newLocalizationTable: (localizationTable: {}) -> ({Provider: LocalizationProvider})
+```
+- Creates a new localization table container and returns localizationTable + Provider
+- Supports autocomplete for localization table
 
 ### `memo`
 
