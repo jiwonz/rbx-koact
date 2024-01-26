@@ -31,9 +31,12 @@ export type CurrentContext = {
 type ButtonEvents = {
 	onClick:()->();
 	onMouseDown:()->();
+	onMouseUp:()->();
 	onMouseEnter:()->();
 	onMouseLeave:()->();
 	onRightClick:()->();
+	onRightMouseDown:()->();
+	onRightMouseUp:()->();
 	onTextChange:()->();
 }
 
@@ -49,7 +52,7 @@ export type PropBase = {
 	style:Style;
 	component:string;
 	id:string;
-	align:Enum.TextXAlignment; --- defaults to "Right"->AnchorPoint=Vector2.new(0,0)
+	align:"right"|"left"|"center"; --- defaults to "right"->AnchorPoint=Vector2.new(0,0)
 }
 
 type RefForwardableComponent = {
@@ -61,7 +64,7 @@ export type Ref = {
 }
 
 export type Context = {
-	Provider:(props:{value:any?})->(Element);
+	Provider:(props:{value:any?,HELP_value:any?})->(Element);
 	_currentValue:any?
 }
 
@@ -82,13 +85,12 @@ export type Koact = {
 	useMemo:(callback:()->(),...any?)->(any?);
 	--// special use hooks
 	useChange:(...any?)->(boolean);
-	useNavigate:()->();
-	useTween:(value:any)->(Hooker,()->());
-	useLocalization:(localizationTarget:string)->({});
+	useNavigate:()->(path:string)->();
+	useTween:(initialValue:any)->(Hooker,()->());
+	--useLocalization:(localizationTable:{})->({});
 	useLanguage:()->(Locale.Enums,(Locale.Enums)->());
 	useSound:(sound:Sound)->()->();
 	useStylesheet:(stylesheet:{})->();
-	--useParticleEmitter:(particleEmitter:ParticleEmitter)->(()->()); -- emit(emitCountOrToggle:number|boolean)
 	--// new
 	--newLocalizationTable:(localizationTable)->();
 	newContext:(initialValue:any?)->(Context);
@@ -120,9 +122,9 @@ export type Koact = {
 	BillboardGui:(props:{}&Helper.BillboardGui&BillboardGui&RefForwardableComponent)->(Element);
 	--// special elements
 	RouterProvider:(props:{})->(Element);
-	Route:(props:{Path:string,ExactPath:string})->(Element);
+	Route:(props:{path:string,HELP_path:string})->(Element);
 	Fragment:(props:{})->();
-	LocalizationProvider:(props:{localization:{}})->(Element);
+	LocalizationProvider:(props:{localization:{},HELP_localization:{}})->(Element);
 	ParticleEmitter:(props:{Scale:number,ParticleEmitter:ParticleEmitter,Emit:number,Enabled:boolean,HELP_Scale:number,HELP_ParticleEmitter:ParticleEmitter,HELP_Emit:number,HELP_Enabled:boolean})->(Element);
 	Modifier:{
 		TextScale:(props:{Scale:number,HELP_Scale:number})->(Element);

@@ -695,9 +695,12 @@ local modifierClasses = {
 
 local events = {
 	onMouseDown = "MouseButton1Down";
+	onMouseUp = "MouseButton1Up";
 	onClick = "MouseButton1Click";
 	onMouseEnter = "MouseEnter";
 	onMouseLeave = "MouseLeave";
+	onRightMouseDown = "MouseButton2Down";
+	onRightMouseUp = "MouseButton2Up";
 	onRightClick = "MouseButton2Click";
 	onTextChange = function(v:TextLabel)
 		return v:GetPropertyChangedSignal("Text")
@@ -1271,9 +1274,9 @@ function meta:__index(classOrComponent:string|()->(Types.Element)):Types.Element
 		setChildren(props)
 		local align = props.align
 		if type(classOrComponent) ~= "function" and align then
-			if align==Enum.TextXAlignment.Center then
+			if align=="center" then
 				props.AnchorPoint = Vector2.new(0.5,0.5)
-			elseif align==Enum.TextXAlignment.Left then
+			elseif align=="left" then
 				props.AnchorPoint = Vector2.new(1,0)
 			else
 				props.AnchorPoint = Vector2.new(0,0)
