@@ -572,7 +572,7 @@ local modifierClasses = {
 		end)
 		return blur
 	end;
-	ScreenBlur=function()
+	ScreenBlur=function(parent)
 		screenBlurId+=1
 		local screenBlur = newInstance("Folder")
 		screenBlur.Name = "ScreenBlur"
@@ -592,6 +592,9 @@ local modifierClasses = {
 			realBlur:Destroy()
 			realBlur = nil
 			screenBlur = nil
+		end)
+		parent:GetAttributeChangedSignal("Visible"):Connect(function()
+			screenBlur:SetAttribute("Enabled",parent.Visible)
 		end)
 		realBlur.Parent = Lighting
 		return screenBlur
