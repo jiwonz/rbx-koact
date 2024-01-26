@@ -16,7 +16,7 @@ This project was not developed using rojo (I just wanted to develop on Roblox St
 - Supports [Helper](#helper-types) types
 - Supports React-like Hooks
 - More snippets support
-- Unlike react, there is modifier elements concept
+- Unlike react, there is [Modifiers](#modifier-elements) concept
 - Unlike react, supports Localization
 - Unlike react, supports 2D ParticleEmitter (thanks to [@nuttolum](https://devforum.roblox.com/u/nuttolum/summary))
 
@@ -97,8 +97,38 @@ Koact.ImageButton{
 ```
 
 ### *Modifier Elements*
-### `Modifier[UI.."bla bla"]`
-- Creates Roblox UI Class Elements such as UIGradient, UICorner, UIStroke etc
+- `Koact.Modifiers[Element Name]` Creates a modifier element whose parent element is affected by it.
+
+`example`
+```lua
+--- you can create roblox's modifiers such as UIGradient, UIStroke, UICorners and etc
+--- Or you can use special custom modifiers whose references are listed below.
+return Koact.Frame{
+	Size=UDim2.fromOffset(300,300);
+	Koact.Modifiers.UIGradient{
+		Color=ColorSequence.new(Color3.new(1,0,0),Color3.new(0,0,1));
+		Rotation=45;
+	}
+}
+```
+
+### `Modifiers.TextScale`
+- Modifies parent element's TextSize depends on this modifier's `Scale` prop
+- This `Scale` prop is relative to the Y axis
+
+### `Modifiers.Round`
+- Uses Image's slices to implement its round corners
+- Must be parented to ImageLabel or ImageButton
+
+### `Modifiers.Blur`
+- Makes parent element's area blurry
+- Uses `DOF` to create this blur effect
+
+### `Modifiers.ScreenBlur`
+- Makes whole screen blurry if the parent element is visible
+
+### `Modifiers.Shadow`
+- Creates shadow effect on the parent element
 
 ### *Function Components*
 `example`
