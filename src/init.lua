@@ -1,23 +1,11 @@
 -- Ko(lloid)(re)act by jiwonz
 -- heavily inspired by react
 
---- [ Special Thanks ]
--- @react for inspiration and solutions
--- @qwreey75 for quad/round
--- @nuttolum for UIParticle
--- @roblox for roact/type, roact/symbol
-
---- [ Issues ]
--- render() function is little bit messy -> bugs can be seen
-
---- [ TODO ]
--- add Koact.memo
-
-local Types = require(script.types)
 local module = {}
 local meta = {}
 
 --// Imports
+local Types = require(script.types)
 local Output = require(script.output)
 local Blur = require(script.libs.blur)
 local Array = require(script.libs.array)
@@ -705,8 +693,21 @@ local events = {
 	onRightMouseDown = "MouseButton2Down";
 	onRightMouseUp = "MouseButton2Up";
 	onRightClick = "MouseButton2Click";
-	onTextChange = function(v:TextLabel)
-		return v:GetPropertyChangedSignal("Text")
+	-- onTextChange = function(target:Instance,value)
+	-- 	return target:GetPropertyChangedSignal("Text"):Connect(value)
+	-- end;
+	onChange = function(target:Instance,value)
+		local old = target[value[1]]
+		return target:GetPropertyChangedSignal(value[1]),value[2],function()
+			local oldold = old
+			old = target[value[1]]
+			return oldold,old
+		end
+	end;
+	on = function(target:Instance,value)
+		return target[value[1]],value[2],function(...)
+			return ...
+		end
 	end;
 }
 
@@ -857,7 +858,7 @@ local function render(old,element,parent,current,providers)
 						current=domElement
 					}
 				end
-				if not RunService:IsStudio() then
+				if not RunService:IsStudio() then --- for easier debugging
 					domElement.Name = ""
 				end
 
@@ -882,8 +883,18 @@ local function render(old,element,parent,current,providers)
 						end
 						local event = events[k]
 						if event then
+							local getReturns:()->()
 							if type(event) == "function" then
-								event = event(domElement)
+								local newEvent,newV,newGetReturns = event(domElement,v)
+								if newEvent then
+									event = newEvent
+								end
+								if newV then
+									v = newV
+								end
+								if newGetReturns then
+									getReturns = newGetReturns
+								end
 							else
 								event = domElement[event]
 							end
@@ -897,10 +908,14 @@ local function render(old,element,parent,current,providers)
 								signal:Disconnect()
 								signal = nil
 							end
-							signal = event:Connect(function()
+							signal = event:Connect(function(...)
 								currentContext = current
 								bindThreadManagers(parent,providers)
-								v()
+								if getReturns == nil then
+									v()
+								else
+									v(getReturns(...))
+								end
 								bindThreadManagers(parent,providers)
 								currentContext = nil
 								if renderQueue then
@@ -1172,6 +1187,7 @@ local router = {}
 
 local NavigateContext = module.newContext()
 local function RouterComponent(props:{})
+	props = props or {}
 	local path,setPath = module.useState("/")
 	return NavigateContext.Provider{
 		value={path=path,setPath=setPath};
@@ -1180,6 +1196,7 @@ local function RouterComponent(props:{})
 end
 
 function module.RouterProvider(props:{})
+	props = props or {}
 	setChildren(props)
 	return {
 		component=RouterComponent;
@@ -1209,6 +1226,7 @@ local function RouteComponent(props:{})
 end
 
 function module.Route(props:{})
+	props = props or {}
 	setChildren(props)
 	return {
 		component=RouteComponent;
@@ -1219,12 +1237,13 @@ end
 
 --// elements
 function module.Fragment(props:{})
+	props = props or {}
 	setChildren(props)
 	return {
 		component={
 			[KoactType]=KoactType.Fragment
 		};
-		props=props or {};
+		props=props;
 		[KoactType]=KoactType.Element;
 	}
 end
@@ -1279,6 +1298,7 @@ function meta:__index(classOrComponent:string|()->(Types.Element)):Types.Element
 		if type(classOrComponent) ~= "function" and align then
 			if align=="center" then
 				props.AnchorPoint = Vector2.new(0.5,0.5)
+				props.Position = UDim2.new(0.5,props.Position and props.Position.X.Offset or 0,0.5,props.Position and props.Position.Y.Offset or 0)
 			elseif align=="left" then
 				props.AnchorPoint = Vector2.new(1,0)
 			else

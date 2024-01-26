@@ -28,7 +28,12 @@ export type CurrentContext = {
 	component:{}|()->()|string;
 }
 
-type ButtonEvents = {
+export type CommonEvents = {
+	onChange:{};
+	on:{};
+}
+
+export type ButtonEvents = {
 	onClick:()->();
 	onMouseDown:()->();
 	onMouseUp:()->();
@@ -37,11 +42,6 @@ type ButtonEvents = {
 	onRightClick:()->();
 	onRightMouseDown:()->();
 	onRightMouseUp:()->();
-	onTextChange:()->();
-}
-
-type TextEvents = {
-	onTextChange:()->();
 }
 
 export type anyElementClass = TextLabel&TextButton&TextBox&Frame&ScrollingFrame&ImageLabel&ImageButton&Helper.TextLabel&Helper.TextButton&Helper.TextBox&Helper.Frame&Helper.ScrollingFrame&Helper.ImageLabel&Helper.ImageButton
@@ -68,25 +68,23 @@ export type Context = {
 	_currentValue:any?
 }
 
-type Hooker = {
-	Fire:(self,...any?)->(...any?);
+export type PropertyChangedListener = {
+	value:any?;
 }
 
 export type Koact = {
 	--// use hooks
 	useContext:(context:Context)->(any?);
-	useState:(initialValue:any?)->(any?,(value)->());
+	useState:(initialValue:any?)->(any?,(value:any?)->());
 	useEffect:(callback:()->(),...any?)->(()->());
 	useReducer:(reducer:(state:any?,action:any?)->(any?),initialArg:any?)->(any?,(action:any?)->());
-	--useDispatch:()->((action:{})->());
-	--useSelector:(selector:(state)->())->();
-	useRef:(initialValue)->(Ref);
+	useRef:(initialValue:any?)->(Ref);
 	useCallback:(callback:()->(),...any?)->(()->());
 	useMemo:(callback:()->(),...any?)->(any?);
 	--// special use hooks
 	useChange:(...any?)->(boolean);
 	useNavigate:()->(path:string)->();
-	useTween:(initialValue:any)->(Hooker,()->());
+	useTween:(initialValue:any)->(()->()|any?,()->());
 	--useLocalization:(localizationTable:{})->({});
 	useLanguage:()->(Locale.Enums,(Locale.Enums)->());
 	useSound:(sound:Sound)->()->();
@@ -105,21 +103,21 @@ export type Koact = {
 	async:(func:()->())->(()->());
 	await:(func:()->())->(any);
 	--// elements
-	TextLabel:(props:PropBase&TextEvents&RefForwardableComponent&Helper.TextLabel&TextLabel)->(Element);
-	TextButton:(props:PropBase&TextEvents&RefForwardableComponent&Helper.TextButton&ButtonEvents&TextButton)->(Element);
-	TextBox:(props:PropBase&TextEvents&RefForwardableComponent&Helper.TextBox&TextBox)->(Element);
-	Frame:(props:PropBase&RefForwardableComponent&Helper.Frame&Frame)->(Element);
-	ScrollingFrame:(props:PropBase&RefForwardableComponent&Helper.ScrollingFrame&ScrollingFrame)->(Element);
-	Div:(props:PropBase&RefForwardableComponent&Helper.Frame&Frame)->(Element); --- frame but with transparent background lol
-	ImageLabel:(props:PropBase&RefForwardableComponent&Helper.ImageLabel&ImageLabel)->(Element);
-	ImageButton:(props:PropBase&RefForwardableComponent&Helper.ImageButton&ButtonEvents&ImageButton)->(Element);
-	VideoFrame:(props:PropBase&RefForwardableComponent&Helper.VideoFrame&VideoFrame)->(Element);
-	CanvasGroup:(props:PropBase&RefForwardableComponent&Helper.CanvasGroup&CanvasGroup)->(Element); --- IMPORTANT: only works in GlobalZIndex mode!
-	ViewportFrame:(props:PropBase&RefForwardableComponent&Helper.ViewportFrame&ViewportFrame)->(Element);
+	TextLabel:(props:PropBase&RefForwardableComponent&CommonEvents&Helper.TextLabel&TextLabel)->(Element);
+	TextButton:(props:PropBase&RefForwardableComponent&CommonEvents&ButtonEvents&Helper.TextButton&TextButton)->(Element);
+	TextBox:(props:PropBase&RefForwardableComponent&CommonEvents&Helper.TextBox&TextBox)->(Element);
+	Frame:(props:PropBase&RefForwardableComponent&CommonEvents&Helper.Frame&Frame)->(Element);
+	ScrollingFrame:(props:PropBase&RefForwardableComponent&CommonEvents&Helper.ScrollingFrame&ScrollingFrame)->(Element);
+	Div:(props:PropBase&RefForwardableComponent&CommonEvents&Helper.Frame&Frame)->(Element); --- frame but with transparent background lol
+	ImageLabel:(props:PropBase&RefForwardableComponent&CommonEvents&Helper.ImageLabel&ImageLabel)->(Element);
+	ImageButton:(props:PropBase&RefForwardableComponent&CommonEvents&ButtonEvents&Helper.ImageButton&ImageButton)->(Element);
+	VideoFrame:(props:PropBase&RefForwardableComponent&CommonEvents&Helper.VideoFrame&VideoFrame)->(Element);
+	CanvasGroup:(props:PropBase&RefForwardableComponent&CommonEvents&Helper.CanvasGroup&CanvasGroup)->(Element); --- IMPORTANT: only works in GlobalZIndex mode!
+	ViewportFrame:(props:PropBase&RefForwardableComponent&CommonEvents&Helper.ViewportFrame&ViewportFrame)->(Element);
 	--// screen gui elements
-	ScreenGui:(props:Helper.ScreenGui&ScreenGui&RefForwardableComponent)->(Element);
-	SurfaceGui:(props:{}&Helper.SurfaceGui&SurfaceGui&RefForwardableComponent)->(Element);
-	BillboardGui:(props:{}&Helper.BillboardGui&BillboardGui&RefForwardableComponent)->(Element);
+	ScreenGui:(props:Helper.ScreenGui&ScreenGui&CommonEvents&RefForwardableComponent)->(Element);
+	SurfaceGui:(props:{}&Helper.SurfaceGui&SurfaceGui&CommonEvents&RefForwardableComponent)->(Element);
+	BillboardGui:(props:{}&Helper.BillboardGui&BillboardGui&CommonEvents&RefForwardableComponent)->(Element);
 	--// special elements
 	RouterProvider:(props:{})->(Element);
 	Route:(props:{path:string,HELP_path:string})->(Element);
@@ -132,18 +130,18 @@ export type Koact = {
 		Blur:(props:{Enabled:boolean,HELP_Enabled:boolean})->(Element);
 		ScreenBlur:(props:{}&RefForwardableComponent&BlurEffect&Helper.BlurEffect)->(Element);
 		Shadow:(props:{Offset:UDim2,HELP_Offset:UDim2,Color:Color3,Transparency:number,HELP_Color:Color3,HELP_Transparency:number}&RefForwardableComponent)->(Element);
-		UIAspectRatioConstraint:(props:{}&RefForwardableComponent&Helper.UIAspectRatioConstraint&UIAspectRatioConstraint)->(Element);
-		UICorner:(props:{}&RefForwardableComponent&Helper.UICorner&UICorner)->(Element);
-		UIGradient:(props:{}&RefForwardableComponent&Helper.UIGradient&UIGradient)->(Element);
-		UIGridLayout:(props:{}&RefForwardableComponent&Helper.UIGridLayout&UIGridLayout)->(Element);
-		UIListLayout:(props:{}&RefForwardableComponent&Helper.UIListLayout&UIListLayout)->(Element);
-		UIPadding:(props:{}&RefForwardableComponent&Helper.UIPadding&UIPadding)->(Element);
-		UIPageLayout:(props:{}&RefForwardableComponent&Helper.UIPageLayout&UIPageLayout)->(Element);
-		UIScale:(props:{}&RefForwardableComponent&Helper.UIScale&UIScale)->(Element);
-		UISizeConstraint:(props:{}&RefForwardableComponent&Helper.UISizeConstraint&UISizeConstraint)->(Element);
-		UIStroke:(props:{}&RefForwardableComponent&Helper.UIStroke&UIStroke)->(Element);
-		UITableLayout:(props:{}&RefForwardableComponent&Helper.UITableLayout&UITableLayout)->(Element);
-		UITextSizeConstraint:(props:{}&RefForwardableComponent&Helper.UITextSizeConstraint&UITextSizeConstraint)->(Element);
+		UIAspectRatioConstraint:(props:{}&RefForwardableComponent&CommonEvents&Helper.UIAspectRatioConstraint&UIAspectRatioConstraint)->(Element);
+		UICorner:(props:{}&RefForwardableComponent&CommonEvents&Helper.UICorner&UICorner)->(Element);
+		UIGradient:(props:{}&RefForwardableComponent&CommonEvents&Helper.UIGradient&UIGradient)->(Element);
+		UIGridLayout:(props:{}&RefForwardableComponent&CommonEvents&Helper.UIGridLayout&UIGridLayout)->(Element);
+		UIListLayout:(props:{}&RefForwardableComponent&CommonEvents&Helper.UIListLayout&UIListLayout)->(Element);
+		UIPadding:(props:{}&RefForwardableComponent&CommonEvents&Helper.UIPadding&UIPadding)->(Element);
+		UIPageLayout:(props:{}&RefForwardableComponent&CommonEvents&Helper.UIPageLayout&UIPageLayout)->(Element);
+		UIScale:(props:{}&RefForwardableComponent&CommonEvents&Helper.UIScale&UIScale)->(Element);
+		UISizeConstraint:(props:{}&RefForwardableComponent&CommonEvents&Helper.UISizeConstraint&UISizeConstraint)->(Element);
+		UIStroke:(props:{}&RefForwardableComponent&CommonEvents&Helper.UIStroke&UIStroke)->(Element);
+		UITableLayout:(props:{}&RefForwardableComponent&CommonEvents&Helper.UITableLayout&UITableLayout)->(Element);
+		UITextSizeConstraint:(props:{}&RefForwardableComponent&CommonEvents&Helper.UITextSizeConstraint&UITextSizeConstraint)->(Element);
 	};
 } & {[Component]:(props:{})->(Element)}
 

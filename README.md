@@ -10,12 +10,19 @@ Koact also enables UI development in Roblox in a similar way to React.
 # Note
 - This project was not developed using rojo (I just wanted to develop on Roblox Studio :D, And this makes it easy to insert as a submodule into the kolloid framework)
 - I'm thinking about using wally package manager soon
+- The autocomplete feature has only been tested in Roblox Studio's script editor. Sadly it may not work externally or on the Roblox LSP.
+- I spent quite a bit of my time to open source this project in order to be of some help to someone. Please refrain from criticizing me and I would appreciate it if you could help me.
+
+# Warning
+- This project is not yet complete and may contain [errors or bugs](#known-issues).
+- Not much testing has been done yet, and there may still be unknown issues remaining. (I would really appreciate it if you could report it to the issues. Or contact me through Discord `jiwonz`)
+- Documentation is not yet complete. If you have any questions, please leave an issue or contact us on Discord `jiwonz` and we will gladly explain.
 
 # Features
 - React-like development pattern and code styles
 - Supports Roblox UI Classes
-- Supports Full Auto completion
-- Supports [Helper](#helper-types) types
+- Supports Full Auto completion (for Roblox Studio)
+- Supports [Helper](#helper-types) types (for Roblox Studio)
 - Supports React-like Hooks
 - More snippets support
 - Unlike react, there is [Modifiers](#modifier-elements) concept
@@ -23,18 +30,37 @@ Koact also enables UI development in Roblox in a similar way to React.
 - Unlike react, supports 2D ParticleEmitter (thanks to [@nuttolum](https://devforum.roblox.com/u/nuttolum/summary))
 
 # Installation
+## Wally
+> [Add into your wally.toml](https://wally.run/package/jiwonz/koact)
+## Roblox Binary Model
 > [Download .RBXM](https://github.com/jiwonz/koact/raw/main/build/koact.rbxm)
 
 # Example Code
-number_counter.lua
+`localization/default.lua`
 ```lua
+return Koact.newLocalizationTable{
+	CounterText="you've clicked %s times!";
+}
+```
+`localization/tur.lua`
+```lua
+local Default = require(script.Parent.default)
+return {
+	[Default.CounterText]="%s kez tıkladınız!";
+}
+```
+`number_counter.lua`
+```lua
+local localizationTable = require(script.Parent.localization.default)
+
 local function App()
 	local count,setCount = Koact.useState(0)
+	local localization = Koact.useLocalization(localizationTable)
+
 	return Koact.TextButton{
-		align="center"; --- equal to AnchorPoint=Vector2.new(0.5,0.5);
-		Position=UDim2.fromScale(0.5,0.5);
+		align="center"; --- equal to {AnchorPoint=Vector2.new(0.5,0.5); Position=UDim2.fromScale(0.5,0.5);}
 		Size=UDim2.fromScale(0.5,0.5);
-		Text=("you've been clicked %s times!"):format(count);
+		Text=(localization.CounterText):format(count); --- if you're turkish, this text will be "{count} kez tıkladınız!"
 		onClick=function()
 			setCount(count+1)
 		end
@@ -55,7 +81,7 @@ COMING SOON
 
 ## Introduction
 
-Although there are some things missing or added to Koact, we recommend that you refer to [React's reference](https://react.dev/reference/react). Additionally, Koact uses a virtual DOM(Koact elements) like React and its life cycle is almost identical to React. also full documentation for Koact will be released later. if you have a question, please leave a DM in discord `jiwonz`
+Although there are some things missing or added to Koact, we recommend that you refer to [React's reference](https://react.dev/reference/react). Additionally, Koact uses a virtual DOM(Koact elements) like React and its life cycle is almost identical to React. also full documentation for Koact will be released later. if you have a question or a problem, please leave a issue or a DM in my discord `jiwonz`
 
 ## Helper Types
 - You can type 'help' or 'HELP' in props table to watch all properties
@@ -67,9 +93,7 @@ Although there are some things missing or added to Koact, we recommend that you 
 `example`
 ```lua
 --- to create UI Elements
-Koact["Roblox UI Class Name Here"]{
-
-}
+Koact["Roblox UI Class Name Here"]{} --- equal to Koact["Roblox UI Class Name Here"](), props can be nil if you want
 
 --- TextLabel element
 Koact.TextLabel{
@@ -78,6 +102,7 @@ Koact.TextLabel{
 
 --- event handling
 Koact.ImageButton{
+	ref=ref;
 	onClick=function()
 		print("clicked")
 	end,
@@ -96,7 +121,36 @@ Koact.ImageButton{
 	onRightClick=function()
 		print("right mouse clicked")
 	end,
+	on={"Changed",function()
+		print("you can also handle RBXScriptEvent manually too!")
+	end},
+	onChange={"Name",function(old,new)
+		print("property Name has changed to",new,"from",old)
+	end}
 }
+
+--- style
+local styles = {
+	BlueBackground={
+		BackgroundColor3=Color3.new(0,0,1);
+	};
+	[Koact.Frame]={
+		BackgroundColor3=Color3.new(1,0,0);
+	}
+}
+
+return function()
+	Koact.useStylesheet(styles)
+
+	return Koact.Frame{
+		Name="Red Screen";
+		Size=UDim2.fromScale(1,1);
+		Koact.TextLabel{
+			style=styles.BlueBackground;
+			Size=UDim2.fromScale(0.5,0.5);
+		}
+	}
+end
 ```
 
 ### *Modifier Elements*
@@ -380,6 +434,7 @@ await: (func: () -> ()) -> (any)
 
 # Known Issues
 - Asynchronous functions may not work as expected or may produce errors or bugs.
+- Function Koact.render() is little bit messy -> bugs can be seen.
 
 # TODO
 - Koact.memo()

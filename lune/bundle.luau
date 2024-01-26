@@ -46,7 +46,7 @@ local function bundle(path,folder)
 	end
 end
 
-bundle(".")
+bundle("src")
 
 local modelFile = roblox.serializeModel({initModule})
 if not fs.isDir("build") then
