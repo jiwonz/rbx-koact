@@ -8,7 +8,8 @@ It is a built-in library for the Kolloid framework and is included as a submodul
 Koact also enables UI development in Roblox in a similar way to React.
 
 # Note
-This project was not developed using rojo (I just wanted to develop on Roblox Studio :D, And this makes it easy to insert as a submodule into the kolloid framework)
+- This project was not developed using rojo (I just wanted to develop on Roblox Studio :D, And this makes it easy to insert as a submodule into the kolloid framework)
+- I'm thinking about using wally package manager soon
 
 # Features
 - React-like development pattern and code styles
@@ -25,6 +26,7 @@ This project was not developed using rojo (I just wanted to develop on Roblox St
 > [Download .RBXM](https://github.com/jiwonz/koact/raw/main/build/koact.rbxm)
 
 # Example Code
+number_counter.lua
 ```lua
 local function App()
 	local count,setCount = Koact.useState(0)
