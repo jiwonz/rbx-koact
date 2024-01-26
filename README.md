@@ -19,7 +19,7 @@ Koact also enables UI development in Roblox in a similar way to React.
 # Warning
 - This project is not yet complete and may contain [errors or bugs](#known-issues).
 - Not much testing has been done yet, and there may still be unknown issues remaining. (I would really appreciate it if you could report it to the issues. Or contact me through Discord `jiwonz`)
-- Documentation is not yet complete. If you have any questions, please leave an issue or contact us on Discord `jiwonz` and we will gladly explain.
+- Documentation is not yet complete. If you have any questions, please leave an issue or contact us on Discord `jiwonz` and i will gladly explain.
 
 # Features
 - React-like development pattern and code styles
@@ -84,7 +84,7 @@ COMING SOON
 
 ## Introduction
 
-Although there are some things missing or added to Koact, we recommend that you refer to [React's reference](https://react.dev/reference/react). Additionally, Koact uses a virtual DOM(Koact elements) like React and its life cycle is almost identical to React. also full documentation for Koact will be released later. if you have a question or a problem, please leave a issue or a DM in my discord `jiwonz`
+Although there are some things missing or added to Koact, i recommend that you refer to [React's reference](https://react.dev/reference/react). Additionally, Koact uses a virtual DOM(Koact elements) like React and its life cycle is almost identical to React. also full documentation for Koact will be released later. if you have a question or a problem, please leave a issue or a DM in my discord `jiwonz`
 
 ## Helper Types
 - You can type 'help' or 'HELP' in props table to watch all properties
@@ -158,14 +158,20 @@ end
 
 ### *Functional Elements*
 
+### `Fragment`
+- Make child components render in the parent component
 ### `RouterProvider`
 - Provides path and navigate function to children components
 ### `Route`
-- If the router's current path matches, render the child component, otherwise not render it.
-### ``
+- If the router's current path matches, render the child component, otherwise not render it
+### `LocalizationProvider`
+- Provides a localization table to child components, equivalent to localizationTable.Provider{}, which receives the `localization` prop
+### `ParticleEmitter`
+- Creates a 2D particle emitter that receives `ParticleEmitter` and the `Enabled` and `Emit` properties.
+- Special thanks to `@nuttolum` for providing the implementation of the 2D particle emitter
 
 ### *Modifier Elements*
-- `Koact.Modifiers[Element Name]` Creates a modifier element whose parent element is affected by it.
+- `Koact.Modifier[Element Name]` Creates a modifier element whose parent element is affected by it
 
 `example`
 ```lua
@@ -188,11 +194,12 @@ return Koact.Frame{
 ### `Modifier.Round`
 - Uses Image's slices to implement its round corners
 - Must be parented to ImageLabel or ImageButton
-- Special thanks to qwreey75 for providing this function
+- Special thanks to `@qwreey75` for contributing the rounded corners feature of the `Quad UI library`.
 
 ### `Modifier.Blur`
 - Makes parent element's area blurry
 - Uses `DOF` to create this blur effect
+- Special thanks to @Fractality for providing the 2D blur effect module.
 
 ### `Modifier.ScreenBlur`
 - Makes whole screen blurry if the parent element is visible
@@ -211,7 +218,7 @@ local function MyButton(props)
 		Image=Koact.rbxassetid(12345678);
 		Koact.TextLabel{
 			Size=UDim2.fromScale(1,1);
-			Text=props.Text:upper(); --- i want to make it upper case
+			Text=props.Text:upper(); --- i want to make it upper case :D
 			Koact.Modifier.TextScale{
 				Scale=0.7;
 			}; --- TextScale example!
@@ -367,7 +374,8 @@ useNavigate: () -> ()
 useTween: (initialValue: any) -> (Hooker, () -> ())
 ```
 
-- Manages tweening animations.
+- When the initial value is set, tweening is not initially performed to that initial value position.
+- The first returns a state value, and the second returns a function that can trigger the tween by changing the state value.
 
 ### `useLocalization`
 `warning` This function is only available in function component scope
@@ -495,7 +503,7 @@ await: (func: () -> ()) -> (any)
 
 # Credits / Special Thanks
 - [@facebook](https://github.com/facebook/react) for inspiration and solutions
-- [@qwreey75](https://github.com/qwreey/quad) for quad/round
+- [@qwreey75](https://github.com/qwreey/quad) for quad/round and for providing the necessary knowledge about React and Koact and providing a lot of help.
 - [@Fractality](https://www.roblox.com/users/1516442/profile) for UI Blur
 - [@nuttolum](https://devforum.roblox.com/u/nuttolum/summary) for UIParticle
 - [@roblox](https://github.com/Roblox/roact) for roact/type, roact/symbol
