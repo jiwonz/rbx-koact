@@ -1,4 +1,7 @@
-![kocat logo](https://github.com/jiwonz/rbx-koact/blob/main/img/koact.png?raw=true)
+<p align="center">
+	<img src="https://github.com/jiwonz/rbx-koact/blob/main/img/koact.png?raw=true" alt="kocat logo" width="250"/>
+</p>
+
 # Koact
 Facebook's React.js-like UI Development Framework for Roblox(Luau) and Kolloid Framework on Roblox
 
