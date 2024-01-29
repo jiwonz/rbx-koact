@@ -12,12 +12,20 @@ local Array = require(script.libs.array)
 local Locale = require(script.libs.locale)
 local Round = require(script.libs.round)
 local UIParticle = require(script.libs.uiparticle)
+local Dragger = require(script.libs.dragger)
+local Resizer = require(script.libs.resizer)
 local KoactType = require(script["type"])
 local Lighting = game:GetService("Lighting")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 local LocalizationService = game:GetService("LocalizationService")
 local SoundService = game:GetService("SoundService")
+local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+local GuiService = game:GetService("GuiService")
+
+--// Pre-Index
+local newInstance = Instance.new
 
 --// Globals
 local currentContext:Types.CurrentContext
@@ -27,9 +35,22 @@ local blurDOF
 local rendering = {}
 local eventHandles = {}
 local renderQueue
+local forcedMouseIcon
+local fakeCursor = newInstance("ImageLabel")
+local fakeCursorScreen = newInstance("ScreenGui")
+local LocalPlayer = Players.LocalPlayer
 
---// Pre-Index
-local newInstance = Instance.new
+fakeCursorScreen.Enabled = false
+fakeCursorScreen.Name = "koact.fakecursor.screen"
+fakeCursorScreen.ResetOnSpawn = false
+fakeCursorScreen.DisplayOrder = 2147483647-1
+fakeCursorScreen.IgnoreGuiInset = true
+fakeCursor.AnchorPoint = Vector2.new(0.5,0.5)
+fakeCursor.Size = UDim2.fromOffset(36,36)
+fakeCursor.BackgroundTransparency = 1
+fakeCursor.Visible = false
+fakeCursor.Parent = fakeCursorScreen
+fakeCursorScreen.Parent = LocalPlayer.PlayerGui
 
 function Output.fatal(msg,...)
 	error(msg:format(...))
@@ -62,6 +83,14 @@ end
 local function initializeCurrent(current)
 	current.hookId = nil
 	current.effectQueue = nil
+end
+
+local function isMouseInFrame(uiobject)
+	local mousePos = UserInputService:GetMouseLocation()-GuiService:GetGuiInset()
+	local y_cond = uiobject.AbsolutePosition.Y <= mousePos.Y and mousePos.Y <= uiobject.AbsolutePosition.Y + uiobject.AbsoluteSize.Y
+	local x_cond = uiobject.AbsolutePosition.X <= mousePos.X and mousePos.X <= uiobject.AbsolutePosition.X + uiobject.AbsoluteSize.X
+
+	return (y_cond and x_cond)
 end
 
 --// new functions
@@ -506,7 +535,7 @@ local elementClasses = {
 			particle = nil
 		end)
 		return particle
-	end,
+	end
 }
 
 local modifierClasses = {
@@ -665,7 +694,7 @@ local modifierClasses = {
 		shadow.Parent = parent
 		return shadow
 	end,
-	TextScale=function(parent:Instance)
+	TextScale=function(parent:Frame)
 		local textScale = newInstance("Folder")
 		textScale.Name = "TextScale"
 		local function update()
@@ -681,6 +710,101 @@ local modifierClasses = {
 		parent.TextScaled = false
 		textScale:SetAttribute("Scale",1)
 		return textScale
+	end,
+	Resizer=function(parent:Frame)
+		local resizer = newInstance("Folder")
+		resizer.Name = "Resizer"
+		resizer:SetAttribute("Resizable",true)
+
+		local handles = {}
+
+		local offset = 6
+
+		local function handle(face)
+			local handler = newInstance("ImageButton")
+			handler.Name = "koact.resizer.handle"
+			handler.BackgroundTransparency = 1
+			handler.ZIndex = 10
+			handler.ImageTransparency = 0.999
+			if face == "B" then
+				handler.Position = UDim2.new(0,offset,1,0)
+				handler.Size = UDim2.new(1,-offset*2,0,offset)
+				handler.Image = "http://www.roblox.com/asset/?id=16154877653"
+			elseif face == "T" then
+				handler.Position = UDim2.new(0,offset,0,-offset)
+				handler.Size = UDim2.new(1,-offset*2,0,offset)
+				handler.Image = "http://www.roblox.com/asset/?id=16154877653"
+			elseif face == "L" then
+				handler.Position = UDim2.new(0,-offset,0,offset)
+				handler.Size = UDim2.new(0,offset,1,-offset*2)
+				handler.Image = "http://www.roblox.com/asset/?id=16154882800"
+			elseif face == "LB" then
+				handler.Position = UDim2.new(0,-offset,1,-offset)
+				handler.Size = UDim2.new(0,offset*2,0,offset*2)
+				handler.Image = "http://www.roblox.com/asset/?id=16154876501"
+			elseif face == "LT" then
+				handler.Position = UDim2.new(0,-5,0,-5)
+				handler.Size = UDim2.new(0,offset*2,0,offset*2)
+				handler.Image = "http://www.roblox.com/asset/?id=16154879726"
+			elseif face == "R" then
+				handler.Position = UDim2.new(1,0,0,5)
+				handler.Size = UDim2.new(0,offset,1,-offset*2)
+				handler.Image = "http://www.roblox.com/asset/?id=16154882800"
+			elseif face == "RB" then
+				handler.Position = UDim2.new(1,-offset,1,-offset)
+				handler.Size = UDim2.new(0,offset*2,0,offset*2)
+				handler.Image = "http://www.roblox.com/asset/?id=16154879726"
+			elseif face == "RT" then
+				handler.Position = UDim2.new(1,-offset,0,-offset)
+				handler.Size = UDim2.new(0,offset*2,0,offset*2)
+				handler.Image = "http://www.roblox.com/asset/?id=16154876501"
+			end
+			handler.Parent = parent
+			handles[face] = handler
+		end
+
+		handle("B")
+		handle("T")
+		handle("L")
+		handle("LB")
+		handle("LT")
+		handle("R")
+		handle("RB")
+		handle("RT")
+
+		local realResizer = Resizer.SetResizer(parent,{
+			CheckResizable=function()
+				return resizer:GetAttribute("Resizable")
+			end,
+			Handle=handles;
+		})
+
+		rendering[realResizer] = function()
+			if realResizer:IsResizing() then
+				return
+			end
+			local mousePosition = UserInputService:GetMouseLocation()
+			local icon
+			for _,v in handles do
+				if isMouseInFrame(v) then
+					icon = v.Image
+					break
+				end
+			end
+			if icon then
+				module.setMouseCursorIcon(icon,true)
+			else
+				module.setMouseCursorIcon("",false)
+			end
+		end
+
+		resizer.Destroying:Once(function()
+			rendering[realResizer] = nil
+			resizer = nil
+			realResizer:Destroy()
+			realResizer = nil
+		end)
+		return resizer
 	end,
 }
 
@@ -1170,6 +1294,33 @@ function runQueue(current,parent,providers)
 	end
 end
 
+local fakeMouseRenderConnection
+function module.setMouseCursorIcon(icon:string,force:boolean)
+	UserInputService.MouseIcon = icon
+	if force then
+		UserInputService.MouseIconEnabled = false
+		forcedMouseIcon = true
+		fakeCursorScreen.Enabled = true
+		fakeCursor.Visible = true
+		fakeCursor.Image = icon
+		fakeMouseRenderConnection = RunService.PreRender:Connect(function()
+			local mousePosition = UserInputService:GetMouseLocation()
+			fakeCursor.Position = UDim2.fromOffset(mousePosition.X,mousePosition.Y)
+		end)
+	else
+		if forcedMouseIcon then
+			forcedMouseIcon = nil
+			if fakeMouseRenderConnection then
+				fakeMouseRenderConnection:Disconnect()
+				fakeMouseRenderConnection = nil
+			end
+			UserInputService.MouseIconEnabled = true
+			fakeCursorScreen.Enabled = false
+			fakeCursor.Visible = false
+		end
+	end
+end
+
 function module.render(element,parent)
 	render(nil,element,parent,{})
 end
@@ -1266,7 +1417,45 @@ function modifierMeta:__index(modifierClass)
 	end
 end
 
-module.Modifier = setmetatable({},modifierMeta)
+local Modifier = {}
+
+local function DraggerComponent(props:{})
+	local ref = module.useRef()
+	local draggable = props.Draggable
+	if draggable == nil then
+		props.Draggable = true
+	end
+	module.useEffect(function()
+		local current = ref.current
+		local dragger
+		if current then
+			dragger = Dragger:SetDragger(current,current.Parent,function()
+				return props.Draggable
+			end)
+		end
+		return function()
+			if dragger then
+				dragger:Destroy()
+				dragger = nil
+			end
+		end
+	end,nil)
+	local dragger = props.Dragger
+	dragger.props.ref = ref
+	return dragger
+end
+
+function Modifier.Dragger(props:{})
+	props = props or {}
+	setChildren(props)
+	return {
+		component=DraggerComponent;
+		props=props;
+		[KoactType]=KoactType.Element;
+	}
+end
+
+module.Modifier = setmetatable(Modifier,modifierMeta)
 
 function meta:__index(classOrComponent:string|()->(Types.Element)):Types.Element
 	local classBehavior = elementClasses[classOrComponent]
@@ -1294,18 +1483,6 @@ function meta:__index(classOrComponent:string|()->(Types.Element)):Types.Element
 			end
 		end
 		setChildren(props)
-		local align = props.align
-		if type(classOrComponent) ~= "function" and align then
-			if align=="center" then
-				props.AnchorPoint = Vector2.new(0.5,0.5)
-				props.Position = UDim2.new(0.5,props.Position and props.Position.X.Offset or 0,0.5,props.Position and props.Position.Y.Offset or 0)
-			elseif align=="left" then
-				props.AnchorPoint = Vector2.new(1,0)
-			else
-				props.AnchorPoint = Vector2.new(0,0)
-			end
-			props.align = nil
-		end
 		return {
 			component=classOrComponent;
 			props=props;

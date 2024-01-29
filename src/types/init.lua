@@ -46,16 +46,15 @@ export type ButtonEvents = {
 
 export type anyElementClass = TextLabel&TextButton&TextBox&Frame&ScrollingFrame&ImageLabel&ImageButton&Helper.TextLabel&Helper.TextButton&Helper.TextBox&Helper.Frame&Helper.ScrollingFrame&Helper.ImageLabel&Helper.ImageButton
 
-type Style = {[string]:{}}
+export type Style = {[string]:{}}
 
 export type PropBase = {
 	style:Style;
 	component:string;
 	id:string;
-	align:"right"|"left"|"center"; --- defaults to "right"->AnchorPoint=Vector2.new(0,0)
 }
 
-type RefForwardableComponent = {
+export type RefForwardableComponent = {
 	ref:Ref;
 }
 
@@ -102,6 +101,7 @@ export type Koact = {
 	clearInterval:(intervalId:number)->();
 	async:(func:()->())->(()->());
 	await:(func:()->())->(any);
+	setMouseCursorIcon:(icon:string,force:boolean)->();
 	--// elements
 	TextLabel:(props:PropBase&RefForwardableComponent&CommonEvents&Helper.TextLabel&TextLabel)->(Element);
 	TextButton:(props:PropBase&RefForwardableComponent&CommonEvents&ButtonEvents&Helper.TextButton&TextButton)->(Element);
@@ -125,6 +125,8 @@ export type Koact = {
 	LocalizationProvider:(props:{localization:{},HELP_localization:{}})->(Element);
 	ParticleEmitter:(props:{Scale:number,ParticleEmitter:ParticleEmitter,Emit:number,Enabled:boolean,HELP_Scale:number,HELP_ParticleEmitter:ParticleEmitter,HELP_Emit:number,HELP_Enabled:boolean})->(Element);
 	Modifier:{
+		Resizer:(props:{Resizable:boolean,HELP_Resizable:boolean})->(Element);
+		Dragger:(props:{Draggable:boolean,HELP_Draggable:boolean,Dragger:Element,HELP_Dragger:Element})->(Element);
 		TextScale:(props:{Scale:number,HELP_Scale:number})->(Element);
 		Round:(props:{Size:number,HELP_Size:number})->(Element);
 		Blur:(props:{Enabled:boolean,HELP_Enabled:boolean})->(Element);

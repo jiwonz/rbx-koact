@@ -61,7 +61,8 @@ local function App()
 	local localization = Koact.useLocalization(localizationTable)
 
 	return Koact.TextButton{
-		align="center"; --- equal to {AnchorPoint=Vector2.new(0.5,0.5); Position=UDim2.fromScale(0.5,0.5);}
+		Position=UDim2.fromScale(0.5,0.5);
+		AnchorPoint=Vector2.new(0.5,0.5);
 		Size=UDim2.fromScale(0.5,0.5);
 		Text=(localization.CounterText):format(count); --- if you're turkish, this text will be "{count} kez tıkladınız!"
 		onClick=function()
@@ -208,6 +209,12 @@ return Koact.Frame{
 - Creates shadow effect on the parent element
 - It repeats every frame to maintain the position of the parent element.
 
+### `Modifier.Dragger`
+- Requires prop `Dragger` argument which must be a Button
+- Allows you to click on a Dragger element and drag the position of its parent element.
+### `Modifier.Resizer`
+- Attaches resizers to parent elements
+
 ### *Function Components*
 `example`
 ```lua
@@ -295,7 +302,8 @@ local function Counter()
 	local state, dispatch = Koact.useReducer(counterReducer,{ count = 0 })
 
 	return Koact.TextButton{
-		align="center";
+		Position=UDim2.fromScale(0.5,0.5);
+		AnchorPoint=Vector2.new(0.5,0.5);
 		Text=state.count;
 		Size=UDim2.fromScale(0.5,0.5);
 		onClick=function()
