@@ -1227,10 +1227,10 @@ function bindThreadManagers(parent,providers)
 
 	module.async = function(func:()->())
 		local current = currentContext
-		return coroutine.wrap(function()
+		return coroutine.wrap(function(...)
 			currentContext = current
 			bindThreadManagers(parent,providers)
-			func()
+			func(...)
 			unbindThreadManagers()
 			currentContext = nil
 			if renderQueue then
