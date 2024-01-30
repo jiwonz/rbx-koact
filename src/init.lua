@@ -793,6 +793,7 @@ local modifierClasses = {
 			end
 			if icon then
 				module.setMouseCursorIcon(icon,true)
+				parent.ClipsDescendants = false
 			else
 				module.setMouseCursorIcon("",false)
 			end
