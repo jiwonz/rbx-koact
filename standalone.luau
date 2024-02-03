@@ -69,4 +69,4 @@ end
 mainModule.Source = `return require(script.{srcModule.Name})`
 
 local file = roblox.serializeModel({mainModule})
-fs.writeFile("standalone.rbxm", file)
+fs.writeFile(mainModule.Name..".rbxm", file)
