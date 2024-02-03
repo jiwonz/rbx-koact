@@ -1,6 +1,6 @@
 [package]
 name = "jiwonz/koact"
-version = "0.1.8"
+version = "0.1.9"
 registry = "https://github.com/UpliftGames/wally-index"
 description = "React-like UI Framework for Roblox"
 realm = "shared"

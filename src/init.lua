@@ -15,7 +15,7 @@ local UIParticle = require(script.libs.uiparticle)
 local Dragger = require(script.libs.dragger)
 local Resizer = require(script.libs.resizer)
 local KoactType = require(script["type"])
-local Promise = require(script.Parent.Promise)
+local Promise = require(script.Parent.promise)
 local Lighting = game:GetService("Lighting")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
@@ -801,6 +801,7 @@ local modifierClasses = {
 		end
 
 		resizer.Destroying:Once(function()
+			module.setMouseCursorIcon("",false)
 			rendering[realResizer] = nil
 			resizer = nil
 			realResizer:Destroy()
@@ -1229,7 +1230,7 @@ function bindThreadManagers(parent,providers)
 
 	module.async = function(func:()->())
 		local current = currentContext
-		return coroutine.wrap(function(...)
+		return Promise.promisify(function(...)
 			currentContext = current
 			bindThreadManagers(parent,providers)
 			func(...)
