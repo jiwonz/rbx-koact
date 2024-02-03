@@ -36,7 +36,7 @@ Koact also enables UI development in Roblox in a similar way to React.
 ## Wally
 > [Add into your wally.toml](https://wally.run/package/jiwonz/koact)
 ## Roblox Binary Model
-> [Download .RBXM](https://github.com/jiwonz/koact/raw/main/build/koact.rbxm)
+> [Download .RBXM](https://github.com/jiwonz/rbx-koact/raw/main/koact.rbxm)
 
 # Example Code
 `localization/default.lua`
