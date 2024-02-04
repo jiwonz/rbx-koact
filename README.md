@@ -511,7 +511,7 @@ await: (func: () -> ()) -> (any)
 
 # Credits / Special Thanks
 - [@facebook](https://github.com/facebook/react) for inspiration and solutions
-- [@qwreey75](https://github.com/qwreey/quad) for quad/round and for providing the necessary knowledge about React and Koact and providing a lot of help.
+- [@qwreey75](https://github.com/qwreey/quad) for quad/round, UIDragger, UIReszier and for providing the necessary knowledge about React and providing a lot of help.
 - [@Fractality](https://www.roblox.com/users/1516442/profile) for UI Blur
 - [@nuttolum](https://devforum.roblox.com/u/nuttolum/summary) for UIParticle
 - [@roblox](https://github.com/Roblox/roact) for roact/type, roact/symbol
