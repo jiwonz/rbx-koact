@@ -1,5 +1,5 @@
 --- qwreey75
-local Signal = require(script.Parent.signal)
+local Signal = require(script.Parent.Parent.Parent.signal)
 local Output = require(script.Parent.Parent.output)
 
 local module = {}
