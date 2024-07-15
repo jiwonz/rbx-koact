@@ -15,7 +15,7 @@ local UIParticle = require(script.libs.uiparticle)
 local Dragger = require(script.libs.dragger)
 local Resizer = require(script.libs.resizer)
 local KoactType = require(script["type"])
-local Promise = require(script.Parent.promise)
+local Promise = require(script.Parent:FindFirstChild("promise") or script:FindFirstChild("Packages").promise)
 local Lighting = game:GetService("Lighting")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
@@ -24,9 +24,6 @@ local SoundService = game:GetService("SoundService")
 local UserInputService = game:GetService("UserInputService")
 local Players = game:GetService("Players")
 local GuiService = game:GetService("GuiService")
-
---// Pre-Index
-local newInstance = Instance.new
 
 --// Globals
 local currentContext:Types.CurrentContext
@@ -37,8 +34,8 @@ local rendering = {}
 local eventHandles = {}
 local renderQueue
 local forcedMouseIcon
-local fakeCursor = newInstance("ImageLabel")
-local fakeCursorScreen = newInstance("ScreenGui")
+local fakeCursor = Instance.new("ImageLabel")
+local fakeCursorScreen = Instance.new("ScreenGui")
 local LocalPlayer = Players.LocalPlayer
 
 fakeCursorScreen.Enabled = false
@@ -112,7 +109,11 @@ function module.newContext(initialValue:any?):Types.Context
 end
 
 --// use functions
-function module.useState(initalValue:any?):(any?,(value:any?)->())
+function module.useState(initalValue:any?):(any?,(value:any?)->()?)
+	if not currentContext then
+		Output.fatal("Cannot use hook outside of functional component.")
+		return
+	end
 	local hooks = currentContext.hooks
 	if not hooks then
 		hooks = {}
@@ -139,6 +140,10 @@ function module.useState(initalValue:any?):(any?,(value:any?)->())
 end
 
 function module.useChange(...)
+	if not currentContext then
+		Output.fatal("Cannot use hook outside of functional component.")
+		return
+	end
 	local dependencies = Array(...)
 	if dependencies.n == 0 then
 		dependencies = nil
@@ -171,6 +176,10 @@ function module.useChange(...)
 end
 
 function module.useCallback(callback:()->(),...)
+	if not currentContext then
+		Output.fatal("Cannot use hook outside of functional component.")
+		return
+	end
 	local hooks = currentContext.hooks
 	if not hooks then
 		hooks = {}
@@ -181,9 +190,7 @@ function module.useCallback(callback:()->(),...)
 	if module.useChange(...) then
 		cache = nil
 	end
-	if cache then
-		callback = nil
-	else
+	if not cache then
 		hooks[id] = callback
 		cache = callback
 	end
@@ -191,6 +198,10 @@ function module.useCallback(callback:()->(),...)
 end
 
 function module.useMemo(callback:()->(),...)
+	if not currentContext then
+		Output.fatal("Cannot use hook outside of functional component.")
+		return
+	end
 	local hooks = currentContext.hooks
 	if not hooks then
 		hooks = {}
@@ -201,9 +212,7 @@ function module.useMemo(callback:()->(),...)
 	if module.useChange(...) then
 		cache = nil
 	end
-	if cache then
-		callback = nil
-	else
+	if not cache then
 		cache = callback()
 		hooks[id] = cache
 	end
@@ -211,6 +220,10 @@ function module.useMemo(callback:()->(),...)
 end
 
 function module.useEffect(callback:()->(),...)
+	if not currentContext then
+		Output.fatal("Cannot use hook outside of functional component.")
+		return
+	end
 	local dependencies = Array(...)
 	if dependencies.n == 0 then
 		dependencies = nil
@@ -243,6 +256,10 @@ function module.useEffect(callback:()->(),...)
 end
 
 function module.useTween(initialValue:any,tweenTime:number?,easingStyle:Enum.EasingStyle?,easingDirection:Enum.EasingDirection?,repeatCount:number?,reverse:boolean?,delayTime:number?)
+	if not currentContext then
+		Output.fatal("Cannot use hook outside of functional component.")
+		return
+	end
 	local args = Array(tweenTime,easingStyle,easingDirection,repeatCount,reverse,delayTime)
 	local state,setState = module.useState(initialValue)
 	local stateHookId = currentContext.hookId
@@ -287,7 +304,11 @@ function module.useTween(initialValue:any,tweenTime:number?,easingStyle:Enum.Eas
 	end
 end
 
-function module.useReducer(reducer:(state:any?,action:any?)->(any?),initialArg:any?):(any?,(action:any?)->())
+function module.useReducer(reducer:(state:any?,action:any?)->(any?),initialArg:any?):(any?,(action:any?)->()?)
+	if not currentContext then
+		Output.fatal("Cannot use hook outside of functional component.")
+		return
+	end
 	local hooks = currentContext.hooks
 	if not hooks then
 		hooks = {}
@@ -310,7 +331,11 @@ function module.useReducer(reducer:(state:any?,action:any?)->(any?),initialArg:a
 	end
 end
 
-function module.useRef(initialValue:any?):Types.Ref
+function module.useRef(initialValue:any?):Types.Ref?
+	if not currentContext then
+		Output.fatal("Cannot use hook outside of functional component.")
+		return
+	end
 	local id = currentContext.hookId and currentContext.hookId+1 or 1
 	currentContext.hookId = id
 	local hooks = currentContext.hooks
@@ -330,6 +355,10 @@ function module.useRef(initialValue:any?):Types.Ref
 end
 
 function module.useContext(context:Types.Context)
+	if not currentContext then
+		Output.fatal("Cannot use hook outside of functional component.")
+		return
+	end
 	return currentContext.useContext and currentContext.useContext(context)
 end
 
@@ -340,6 +369,10 @@ function module.useSound(sound:Sound)
 end
 
 function module.useStylesheet(stylesheet)
+	if not currentContext then
+		Output.fatal("Cannot use hook outside of functional component.")
+		return
+	end
 	local tagStyles = currentContext.tagStyles
 	if not tagStyles then
 		tagStyles = {}
@@ -448,11 +481,10 @@ function module.newLocalizationTable(localizationTable,localizationModules:Insta
 	end}
 end
 
-function module.useLocalization(localizationTable)
+function module.useLocalization<T>(localizationTable:T):T
 	local value = module.useContext(localizationContext)
-	return value.localizationTable::typeof(localizationTable)
+	return value.localizationTable::T
 end
-local module:typeof(module)&Types.Koact = module --- for auto typing trick
 
 function module.useLanguage()
 	local value = module.useContext(localizationContext)
@@ -460,6 +492,33 @@ function module.useLanguage()
 end
 
 --// components
+local fakeMouseRenderConnection
+function module.setMouseCursorIcon(icon:string,force:boolean)
+	UserInputService.MouseIcon = icon
+	if force then
+		UserInputService.MouseIconEnabled = false
+		forcedMouseIcon = true
+		fakeCursorScreen.Enabled = true
+		fakeCursor.Visible = true
+		fakeCursor.Image = icon
+		fakeMouseRenderConnection = RunService.PreRender:Connect(function()
+			local mousePosition = UserInputService:GetMouseLocation()
+			fakeCursor.Position = UDim2.fromOffset(mousePosition.X,mousePosition.Y)
+		end)
+	else
+		if forcedMouseIcon then
+			forcedMouseIcon = nil
+			if fakeMouseRenderConnection then
+				fakeMouseRenderConnection:Disconnect()
+				fakeMouseRenderConnection = nil
+			end
+			UserInputService.MouseIconEnabled = true
+			fakeCursorScreen.Enabled = false
+			fakeCursor.Visible = false
+		end
+	end
+end
+
 local elementClasses = {
 	VideoFrame=true;
 	CanvasGroup=true;
@@ -472,24 +531,24 @@ local elementClasses = {
 	Frame=true;
 	ScrollingFrame=true;
 	Div=function()
-		local frame = newInstance("Frame")
+		local frame = Instance.new("Frame")
 		frame.BackgroundTransparency = 1
 		return frame
 	end;
 	ScreenGui=function()
-		local gui = newInstance("ScreenGui")
+		local gui = Instance.new("ScreenGui")
 		gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 		gui.ResetOnSpawn = false
 		return gui
 	end;
 	SurfaceGui=function()
-		local gui = newInstance("SurfaceGui")
+		local gui = Instance.new("SurfaceGui")
 		gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 		gui.ResetOnSpawn = false
 		return gui
 	end;
 	BillboardGui=function()
-		local gui = newInstance("BillboardGui")
+		local gui = Instance.new("BillboardGui")
 		gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 		gui.ResetOnSpawn = false
 		return gui
@@ -497,16 +556,16 @@ local elementClasses = {
 	ParticleEmitter=function(parent,props)
 		local emitter
 		local scale = props.Scale --- this is initial value, not able to change again
-		local particle = newInstance("Folder")
+		local particle = Instance.new("Folder")
 		particle.Name = "ParticleEmitter"
 		particle:SetAttribute("Emit",0)
-		local realEmitterValue = newInstance("ObjectValue")
+		local realEmitterValue = Instance.new("ObjectValue")
 		realEmitterValue.Name = "ParticleEmitter"
 		realEmitterValue.Parent = particle
 		particle:SetAttribute("Enabled",false)
 		particle:SetAttribute("Scale",1)
 		particle.Parent = parent
-		local oldEmit
+		--local oldEmit
 		local function update(attribute)
 			local realEmitter = realEmitterValue.Value
 			if realEmitter and not emitter then
@@ -518,7 +577,7 @@ local elementClasses = {
 				if enabled then
 					emitter.Enabled = enabled
 				end
-				oldEmit = emit
+				--oldEmit = emit
 				if emit and emit > 0 then--and oldEmit ~= emit then
 					emitter:Emit(emit)
 				end
@@ -555,7 +614,7 @@ local modifierClasses = {
 	Blur=function(parent)
 		blurId+=1
 		if not blurDOF then
-			blurDOF = newInstance("DepthOfFieldEffect")
+			blurDOF = Instance.new("DepthOfFieldEffect")
 			blurDOF.Name = "koact.dof"
 			blurDOF.Enabled = true
 			blurDOF.FarIntensity = 0
@@ -568,7 +627,7 @@ local modifierClasses = {
 			Transparency = 0.98,
 			Color = Color3.new(1,1,1)
 		}
-		local blur = newInstance("Folder")
+		local blur = Instance.new("Folder")
 		blur.Name = "Blur"
 		blur:SetAttribute("Enabled",true)
 		Blur:BindFrame(parent,blurPartConfig)
@@ -592,12 +651,12 @@ local modifierClasses = {
 	end;
 	ScreenBlur=function(parent)
 		screenBlurId+=1
-		local screenBlur = newInstance("Folder")
+		local screenBlur = Instance.new("Folder")
 		screenBlur.Name = "ScreenBlur"
 		screenBlur:SetAttribute("Enabled",true)
 		screenBlur:SetAttribute("Size",24)
 		screenBlur:SetAttribute("Archivable",true)
-		local realBlur = newInstance("BlurEffect")
+		local realBlur = Instance.new("BlurEffect")
 		realBlur.Name = "koact.screenblur"..screenBlurId
 		realBlur.Enabled = true
 		realBlur.Size = 24
@@ -617,12 +676,12 @@ local modifierClasses = {
 		realBlur.Parent = Lighting
 		return screenBlur
 	end;
-	Round=function(parent:GuiObject)
+	Round=function(parent:any&ImageLabel&ImageButton)
 		if not parent:IsA("ImageLabel") and not parent:IsA("ImageButton") then
 			Output.fatal("Koact.Modifier.Round can only be used on ImageLabel and ImageButton.")
 			return
 		end
-		local round = newInstance("Folder")
+		local round = Instance.new("Folder")
 		round.Name = "Round"
 		round:SetAttribute("Size",0)
 		round:GetAttributeChangedSignal("Size"):Connect(function()
@@ -636,13 +695,13 @@ local modifierClasses = {
 		end)
 		return round
 	end,
-	Shadow=function(parent)
-		local shadow = newInstance("Folder")
+	Shadow=function(parent:any&ImageLabel&TextLabel)
+		local shadow = Instance.new("Folder")
 		shadow.Name = "Shadow"
 		shadow:SetAttribute("Color",Color3.new(0,0,0))
 		shadow:SetAttribute("Transparency",0.5)
 		shadow:SetAttribute("Offset",UDim2.new())
-		local realShadow:Instance = parent:Clone()
+		local realShadow:typeof(parent) = parent:Clone()
 		local function overrideOpacity(original)
 			return 1-(1-original)*(1-shadow:GetAttribute("Transparency"))
 		end
@@ -685,8 +744,6 @@ local modifierClasses = {
 		shadow.Destroying:Once(function()
 			rendering[realShadow] = nil
 			realShadow:Destroy()
-			realShadow = nil
-			shadow = nil
 		end)
 		if process then
 			rendering[realShadow] = update
@@ -695,8 +752,8 @@ local modifierClasses = {
 		shadow.Parent = parent
 		return shadow
 	end,
-	TextScale=function(parent:Frame)
-		local textScale = newInstance("Folder")
+	TextScale=function(parent)
+		local textScale = Instance.new("Folder")
 		textScale.Name = "TextScale"
 		local function update()
 			parent.TextSize = parent.AbsoluteSize.Y*textScale:GetAttribute("Scale")
@@ -713,7 +770,7 @@ local modifierClasses = {
 		return textScale
 	end,
 	Resizer=function(parent:Frame)
-		local resizer = newInstance("Folder")
+		local resizer = Instance.new("Folder")
 		resizer.Name = "Resizer"
 		resizer:SetAttribute("Resizable",true)
 
@@ -722,7 +779,7 @@ local modifierClasses = {
 		local offset = 6
 
 		local function handle(face)
-			local handler = newInstance("ImageButton")
+			local handler = Instance.new("ImageButton")
 			handler.Name = "koact.resizer.handle"
 			handler.BackgroundTransparency = 1
 			handler.ZIndex = 10
@@ -784,7 +841,7 @@ local modifierClasses = {
 			if realResizer:IsResizing() then
 				return
 			end
-			local mousePosition = UserInputService:GetMouseLocation()
+			--local mousePosition = UserInputService:GetMouseLocation()
 			local icon
 			for _,v in handles do
 				if isMouseInFrame(v) then
@@ -820,9 +877,6 @@ local events = {
 	onRightMouseDown = "MouseButton2Down";
 	onRightMouseUp = "MouseButton2Up";
 	onRightClick = "MouseButton2Click";
-	-- onTextChange = function(target:Instance,value)
-	-- 	return target:GetPropertyChangedSignal("Text"):Connect(value)
-	-- end;
 	onChange = function(target:Instance,value)
 		local old = target[value[1]]
 		return target:GetPropertyChangedSignal(value[1]),value[2],function()
@@ -973,7 +1027,7 @@ local function render(old,element,parent,current,providers)
 					domElement = ref.current
 				end
 			else
-				domElement = type(classBehavior)=="function" and classBehavior(parent,props) or newInstance(component)
+				domElement = type(classBehavior)=="function" and classBehavior(parent,props) or Instance.new(component)
 			end
 			if domElement then
 				local ref = props.ref
@@ -989,7 +1043,7 @@ local function render(old,element,parent,current,providers)
 					domElement.Name = ""
 				end
 
-				local style = props.style
+				style = props.style
 				if style then
 					applyStyle(domElement,style)
 				end
@@ -1053,7 +1107,7 @@ local function render(old,element,parent,current,providers)
 									local oldParent = renderTarget.parent
 									bindThreadManagers(oldParent,providers)
 									local new = renderTarget.component(renderTarget.props) or module.Fragment{}
-									unbindThreadManagers(oldParent,providers)
+									unbindThreadManagers()
 									currentContext = nil
 									render(renderTarget.oldElement,new,oldParent,renderTarget,providers)
 									renderTarget.oldElement = new
@@ -1085,7 +1139,7 @@ local function render(old,element,parent,current,providers)
 			end
 		else
 			renderChildren = false
-			local current = old and old.current or {}
+			current = old and old.current or {}
 			if old then
 				initializeCurrent(current)
 			end
@@ -1297,33 +1351,6 @@ function runQueue(current,parent,providers)
 	end
 end
 
-local fakeMouseRenderConnection
-function module.setMouseCursorIcon(icon:string,force:boolean)
-	UserInputService.MouseIcon = icon
-	if force then
-		UserInputService.MouseIconEnabled = false
-		forcedMouseIcon = true
-		fakeCursorScreen.Enabled = true
-		fakeCursor.Visible = true
-		fakeCursor.Image = icon
-		fakeMouseRenderConnection = RunService.PreRender:Connect(function()
-			local mousePosition = UserInputService:GetMouseLocation()
-			fakeCursor.Position = UDim2.fromOffset(mousePosition.X,mousePosition.Y)
-		end)
-	else
-		if forcedMouseIcon then
-			forcedMouseIcon = nil
-			if fakeMouseRenderConnection then
-				fakeMouseRenderConnection:Disconnect()
-				fakeMouseRenderConnection = nil
-			end
-			UserInputService.MouseIconEnabled = true
-			fakeCursorScreen.Enabled = false
-			fakeCursor.Visible = false
-		end
-	end
-end
-
 function module.render(element,parent)
 	render(nil,element,parent,{})
 end
@@ -1337,10 +1364,8 @@ function module.rbxassetid(assetId:number | string):string
 end
 
 --// router
-local router = {}
-
 local NavigateContext = module.newContext()
-local function RouterComponent(props:{})
+local function RouterComponent(props)
 	props = props or {}
 	local path,setPath = module.useState("/")
 	return NavigateContext.Provider{
@@ -1367,7 +1392,7 @@ function module.useNavigate()
 	return module.useContext(NavigateContext).setPath
 end
 
-local function RouteComponent(props:{})
+local function RouteComponent(props)
 	local currentPath = module.useContext(NavigateContext)
 	local children = props.children
 	if children then
@@ -1377,6 +1402,7 @@ local function RouteComponent(props:{})
 			}
 		end
 	end
+	return
 end
 
 function module.Route(props:{})
@@ -1422,7 +1448,7 @@ end
 
 local Modifier = {}
 
-local function DraggerComponent(props:{})
+local function DraggerComponent(props)
 	local ref = module.useRef()
 	local draggable = props.Draggable
 	if draggable == nil then
@@ -1460,7 +1486,7 @@ end
 
 module.Modifier = setmetatable(Modifier,modifierMeta)
 
-function meta:__index(classOrComponent:string|()->(Types.Element)):Types.Element
+function meta:__index(classOrComponent:string|()->(Types.Element)):(()->(Types.Element))?
 	local classBehavior = elementClasses[classOrComponent]
 	if type(classOrComponent) == "string" and classBehavior == nil then
 		Output.fatal("Invalid class '%s'",classOrComponent)

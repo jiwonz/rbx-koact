@@ -24,9 +24,10 @@ export type CurrentContext = {
 	oldElement:{};
 	tagStyles:{};
 	props:{};
-	useContext:()->();
+	useContext:(context:Context)->(any);
 	component:{}|()->()|string;
-}
+	tweens:{};
+}?
 
 export type CommonEvents = {
 	onChange:{};
@@ -74,14 +75,14 @@ export type PropertyChangedListener = {
 export type Koact = {
 	--// use hooks
 	useContext:(context:Context)->(any?);
-	useState:(initialValue:any?)->(any?,(value:any?)->());
+	useState:(initialValue:any?)->(any?,(value:any?)->()?);
 	useEffect:(callback:()->(),...any?)->(()->());
 	useReducer:(reducer:(state:any?,action:any?)->(any?),initialArg:any?)->(any?,(action:any?)->());
 	useRef:(initialValue:any?)->(Ref);
 	useCallback:(callback:()->(),...any?)->(()->());
 	useMemo:(callback:()->(),...any?)->(any?);
 	--// special use hooks
-	useChange:(...any?)->(boolean);
+	useChange:(...any?)->(boolean?);
 	useNavigate:()->(path:string)->();
 	useTween:(initialValue:any)->(()->()|any?,()->());
 	--useLocalization:(localizationTable:{})->({});
