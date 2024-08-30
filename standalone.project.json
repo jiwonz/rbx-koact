@@ -1,9 +1,12 @@
 {
 	"name": "koact",
 	"tree": {
-		"$path": "src",
+		"$path": "entry",
 		"Packages": {
-			"$path": "Packages"
+			"$path": "Packages",
+			"koact": {
+				"$path": "src"
+			}
 		}
 	}
 }
