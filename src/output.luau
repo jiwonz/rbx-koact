@@ -2,7 +2,7 @@ local module = {}
 local data = {}
 local reversed = {}
 
-function module.reverse(k,v)
+function module.reverse(k, v)
 	reversed[k] = v
 	data[k] = v
 end
@@ -13,9 +13,9 @@ function meta:__index(k)
 	return data[k]
 end
 
-function meta:__newindex(k,v)
+function meta:__newindex(k, v)
 	local reverse = reversed[k]
 	data[k] = reverse or v
 end
 
-return setmetatable(module,meta)
+return setmetatable(module, meta)

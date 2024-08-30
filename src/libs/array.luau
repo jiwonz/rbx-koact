@@ -6,9 +6,9 @@ arrayClass.__index = arrayClass
 --end
 
 function arrayClass:unpack()
-	return table.unpack(self,1,self.n)
+	return table.unpack(self, 1, self.n)
 end
 
 return function(...)
-	return setmetatable(table.pack(...),arrayClass)
+	return setmetatable(table.pack(...), arrayClass)
 end

@@ -1,7 +1,53 @@
 -- using ISO 639-2
 -- nogada by CHAT GPT-3
 
-export type Enums = "eng"|"spa"|"fra"|"ind"|"ita"|"jpn"|"kor"|"rus"|"tha"|"tur"|"vie"|"por"|"deu"|"chi"|"chi"|"bul"|"ben"|"ces"|"dan"|"ell"|"est"|"fin"|"hin"|"hrv"|"hun"|"kat"|"kaz"|"khm"|"lit"|"lav"|"msa"|"mya"|"nob"|"nld"|"fil"|"pol"|"ron"|"ukr"|"sin"|"slk"|"slv"|"sqi"|"bos"|"srp"|"swe"|"ara"
+export type Enums =
+	"eng"
+	| "spa"
+	| "fra"
+	| "ind"
+	| "ita"
+	| "jpn"
+	| "kor"
+	| "rus"
+	| "tha"
+	| "tur"
+	| "vie"
+	| "por"
+	| "deu"
+	| "chi"
+	| "chi"
+	| "bul"
+	| "ben"
+	| "ces"
+	| "dan"
+	| "ell"
+	| "est"
+	| "fin"
+	| "hin"
+	| "hrv"
+	| "hun"
+	| "kat"
+	| "kaz"
+	| "khm"
+	| "lit"
+	| "lav"
+	| "msa"
+	| "mya"
+	| "nob"
+	| "nld"
+	| "fil"
+	| "pol"
+	| "ron"
+	| "ukr"
+	| "sin"
+	| "slk"
+	| "slv"
+	| "sqi"
+	| "bos"
+	| "srp"
+	| "swe"
+	| "ara"
 
 local localeInverse = {}
 local languageInverse = {}
@@ -54,7 +100,7 @@ local locales = {
 	["sv-se"] = "swe",
 	["ar-001"] = "ara",
 
-	Language={
+	Language = {
 		["English"] = "eng",
 		["Spanish"] = "spa",
 		["French"] = "fra",
@@ -101,7 +147,7 @@ local locales = {
 		["Swedish"] = "swe",
 		["Arabic"] = "ara",
 
-		inverse = languageInverse
+		inverse = languageInverse,
 	},
 
 	Native = {
@@ -152,14 +198,14 @@ local locales = {
 		["ara"] = "العربية",
 	},
 
-	inverse = localeInverse
+	inverse = localeInverse,
 }
 
-for k,v in locales do
+for k, v in locales do
 	localeInverse[v] = k
 end
 
-for k,v in locales.Language do
+for k, v in locales.Language do
 	languageInverse[v] = k
 end
 
